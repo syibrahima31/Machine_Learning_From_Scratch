@@ -42,12 +42,17 @@ class Knn:
         vec_pred = [self._predict(prediction) for prediction in X]    
         return vec_pred
 
+    def score(self, x_test, y_test):
+        prediction = self.predict(x_test)
+        acc = np.sum(prediction ==y_test )
+        return acc / x_test.shape[0]    
+
 
 
 
 model = Knn(k=3)
 model.fit(data,target)
 prediction = model.predict(data)
+# print accuracy 
 
-
-accuracy = np.sum(prediction== target) / data.shape[0]
+model.score(data, target)
