@@ -43,7 +43,7 @@ class LinearRegression:
             self.y_pred = np.dot(X, self.weights)
         
     
-        # loss function
+    # define the model 
     def predict(self, x_test):
         if self.weights.shape[0] -1 == x_test.shape[1]:
             x_test =  np.concatenate(( np.ones(x_test.shape[0]).reshape(-1,1), x_test), axis =1)
@@ -52,8 +52,7 @@ class LinearRegression:
 
             print("show your dimension")
 
-model = LinearRegression(1000, 0.1)
+model = LinearRegression(1000, 0.2)
 weights =model.fit(x_train, y_train)
 pred = model.predict(x_train)
-# print (weights)
 
