@@ -1,79 +1,79 @@
 import numpy as np 
-import pandas as pd 
+import pandas  as pd 
 from sklearn import datasets
-from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt 
-from  collections import Counter
+from sklearn.model_selection import train_test_split
+from collections import Counter
 
 
+dataset = datasets.load_iris()
+x, y = dataset.data, dataset.target
 
-#import the dataset from api in sklearn
-iris = datasets.load_iris()
-X, y = iris.data, iris.target
+x_train, x_test , y_train, y_test = train_test_split(x, y , test_size =0.2, random_state=49)
 
-x_train, x_test, y_train, y_test = train_test_split(X,y, test_size =0.18, random_state=49)
 
 
 class Knn:
-    def __init__(self, k ):
-        self.k = k
-
-    def fit(self, x_train, y_train):
-        self.X = x_train
-        self.y = y_train
-         
-
-
-    def predict(self, x_test):
-        return np.array([self._predict(x) for x in x_test])
-
-    def euclid_distance(self,vect_1, vect_2):
-        return np.sqrt(np.sum( (vect_1-vect_2)**2))
+    def __init__(self, k):
+        self.k = k + 1
+        
+    def fit(self,x_train , y_train):
+        self.x = x_train 
+        self.y = y_train 
 
 
+    def prediction(self, X):
+        prediction = [self._predict(x) for x in X]    
+        return np.array(prediction)
 
-    def _predict(self,obs):
-        distance = [self.euclid_distance(x, obs) for x in self.X]
+    def score(self, x_test, y_test):
+        pred = self.prediction(x_test)
+        return  (np.sum(pred==y_test) ) / x_test.shape[0]  
+
+    def euclid_dist(self, val_1, val_2 ):
+        return np.sqrt(np.sum((val_1 -val_2)**2))
+
+
+    def _predict(self, obs):
+        distance = [self.euclid_dist(x_train, obs) for x_train in self.x] 
         index = np.argsort(distance)
-        labels = self.y[index]
+        labels = self.y [index]
         k_labels = labels[:self.k]
-        count = Counter(k_labels).most_common()
-        classe = count[0][0]
+        count = Counter(k_labels)
+        classe = count.most_common()[0][0]
         return classe
 
 
 
-    def score(self, x_test, y_test):
-        prediction = self.predict(x_test)
-        acc = np.sum(prediction ==y_test )
-        return acc / x_test.shape[0]    
 
+if __name__ =="main":
 
-
-
-model = Knn(k=3)
-model.fit(x_train,y_train)
-prediction = model.predict(x_test)
-model.score(x_test, y_test)
-
-# print accuracy 
-
-def evaluate():
-    acc_test  = []
-    acc_train = []
-    for i in range(1, 202):
-        model = Knn(k=i)
-        model.fit(x_train,y_train)
+    L_test  = []
+    L_train = []
+    for i in range(1, 101):
+        model = Knn(i)
+        model.fit(x_train, y_train)
         score_test = model.score(x_test, y_test)
         score_train = model.score(x_train, y_train)
-        acc_test.append(score_test)
-        acc_train.append(score_train)
+        L_test.append(score_test)
+        L_train.append(score_train)
 
+
+
+# plot the accuracy in training set and test set
     plt.figure()
-    plt.plot(range(1, 202), acc_test, label="test set")
-    plt.plot(range(1, 202), acc_train, label="train set")
+    plt.plot(range(1,101), L_test,label = "test set")
+    plt.plot(range(1,101), L_train, label = "train set")
     plt.legend()
-    plt.show() 
+    plt.show()
 
-evaluate()
 
+# # use the k for trainnning 
+
+    model = Knn(34)
+    model.fit(x_train, y_train)
+    score_test = model.score(x_test, y_test)
+    score_train = model.score(x_train, y_train)
+
+    print(f"the accuracy on the training set {score_train}")
+    print(f"the accuracy on the test_set {score_test}")
